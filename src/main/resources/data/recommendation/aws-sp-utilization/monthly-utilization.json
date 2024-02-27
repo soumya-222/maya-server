@@ -1,0 +1,47 @@
+{
+  "SavingsPlansUtilizationsByTime": [
+    {{setVar 'varNext' (dateTimeShift date=(body 'TimePeriod.Start') months=1)}}
+    {{#repeat 12 comma=true}}
+    {
+      {{setVar 'varNow' (getVar 'varNext')}}
+      {{setVar 'varNext' (dateTimeShift date=(getVar 'varNow') months=1)}}
+      "TimePeriod": {
+        "Start": "{{concat (dateFormat (getVar 'varNow') 'YYYY-MM') '-01'}}",
+        "End": "{{concat (dateFormat (getVar 'varNext') 'YYYY-MM') '-01'}}"
+      },
+      "Utilization": {
+        "TotalCommitment": "{{multiply '662266.512' (float 0.8 1.0)}}",
+        "UsedCommitment": "{{multiply '8620338.8696919961' (float 0.8 1.0)}}",
+        "UnusedCommitment": "{{multiply '0.0000000015999999999999999' (float 0.8 1.0)}}",
+        "UtilizationPercentage": "{{multiply '99.98195536167555104571143639393311' (float 0.8 1.0)}}"
+      },
+      "Savings": {
+        "NetSavings": "{{multiply '433095.1405233941' (float 0.8 1.0)}}",
+        "OnDemandCostEquivalent": "{{multiply '15986431.2163981787' (float 0.8 1.0)}}"
+      },
+      "AmortizedCommitment": {
+        "AmortizedRecurringCommitment": "{{multiply '2014320.0' (float 0.8 1.0)}}",
+        "AmortizedUpfrontCommitment": "{{multiply '6607574.6593999998' (float 0.8 1.0)}}",
+        "TotalAmortizedCommitment": "{{multiply 8621894.65939999981 (float 0.8 1.0)}}"
+      }
+    }
+    {{/repeat}}
+  ],
+  "Total": {
+    "Utilization": {
+      "TotalCommitment": "8621894.65939999981",
+      "UsedCommitment": "8620338.8696919961",
+      "UnusedCommitment": "1555.78970800369989998999999999",
+      "UtilizationPercentage": "99.98195536167555104571143639393311"
+    },
+    "Savings": {
+      "NetSavings": "7364536.5569981786",
+      "OnDemandCostEquivalent": "15986431.2163981787"
+    },
+    "AmortizedCommitment": {
+      "AmortizedRecurringCommitment": "2014320.0",
+      "AmortizedUpfrontCommitment": "6607574.6593999998",
+      "TotalAmortizedCommitment": "8621894.65939999981"
+    }
+  }
+}

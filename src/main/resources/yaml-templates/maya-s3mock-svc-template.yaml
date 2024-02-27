@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${pod-name}-svc
+  namespace: ${namespace}
+spec:
+  selector:
+    app: ${pod-name}
+  ports:
+    - protocol: TCP
+      port: 9090
+      targetPort: 9090

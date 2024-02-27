@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${pod-name}-deployment
+  namespace: ${namespace}
+  labels:
+    app: ${pod-name}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${pod-name}
+  template:
+    metadata:
+      labels:
+        app: ${pod-name}
+    spec:
+      containers:
+        - name: azurite
+          image: mcr.microsoft.com/azure-storage/azurite
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: AZURITE_ACCOUNTS
+              value: ${custom-account}
+          args:
+            - azurite
+            - '--blobHost'
+            - '0.0.0.0'
+            - '--blobPort'
+            - '10000'
+            - '--queueHost'
+            - '0.0.0.0'
+            - '--queuePort'
+            - '10001'
+            - '--tableHost'
+            - '0.0.0.0'
+            - '--tablePort'
+            - '10002'
+            - '--debug'
+            - '/tmp/debug.log'
+            - '--loose'
+            - '--disableProductStyleUrl'
+          ports:
+            - containerPort: 10000
+              name: blob
+              protocol: TCP
+            - containerPort: 10001
+              name: queue
+              protocol: TCP
+            - containerPort: 10002
+              name: table
+              protocol: TCP
+
+          volumeMounts:
+            - name: "nfs"
+              mountPath: "/mnt/azurite-data"
+              subPath: "maya/data/azurite"
+
+      volumes:
+        - name: "nfs"
+          persistentVolumeClaim:
+            claimName: "maya-volume"

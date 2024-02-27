@@ -1,0 +1,105 @@
+databaseChangeLog:
+  - changeSet:
+      id: maya01-1
+      author: MAYA
+      changes:
+        - createTable:
+            tableName: maya_use_case
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: use_case_name
+                  type: varchar(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: cloud_provider
+                  type: varchar(255)
+              - column:
+                  name: state
+                  type: varchar(255)
+              - column:
+                  name: account_url
+                  type: varchar(255)
+              - column:
+                  name: mockoon_port
+                  type: integer
+              - column:
+                  name: billing_url
+                  type: varchar(255)
+              - column:
+                  name: recommendation_url
+                  type: varchar(255)
+              - column:
+                  name: payload
+                  type: text
+
+  - changeSet:
+      id: maya01-2
+      author: MAYA
+      changes:
+        - createTable:
+            tableName: account_metadata
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: use_case_id
+                  type: varchar(255)
+                  constraints:
+                    foreignKeyName: fk_maya_use_case
+                    references: maya_use_case(id)
+              - column:
+                  name: endpoint_type
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: data_file_path
+                  type: text
+
+  - changeSet:
+      id: maya01-3
+      author: MAYA
+      changes:
+        - createTable:
+            tableName: account_data
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: use_case_id
+                  type: varchar(255)
+                  constraints:
+                    foreignKeyName: fk_maya_use_case
+                    references: maya_use_case(id)
+              - column:
+                  name: root_account
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: member_accounts
+                  type: text
+
+
+
+
+
+
+
+

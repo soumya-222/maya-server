@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: maya-server-service
+  namespace: ${namespace}
+spec:
+  selector:
+    app: maya-server-deployment
+  ports:
+    - protocol: TCP
+      port: 9994
+      targetPort: 9994

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: maya-server-cm
+  namespace: ${namespace}
+data:
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://${DB_HOSTNAME}:5432/maya"
+  SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+  SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+  HOST_NAME: ${HOST_NAME}

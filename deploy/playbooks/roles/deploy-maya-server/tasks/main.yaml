@@ -1,0 +1,185 @@
+- name: "Set variables"
+  set_fact:
+    extracted_dir: "{{ workspace_dir }}/maya/extracted"
+    realized_dir: "{{ workspace_dir }}/maya/realized"
+    test_url: "https://{{ master }}/maya/v1/usecase"
+ 
+- name: "Install packages and dependencies"
+  yum:
+    name:
+      - epel-release
+      - python3-setuptools
+      - python3-devel
+      - python3-pip
+      - python3-psycopg2
+      - gcc
+    state: present
+    disable_gpg_check: yes
+
+- name: "Upgrade Pip"
+  shell: |
+    python3 -m pip install --upgrade pip
+  become: yes
+
+- name: "Install Python packages"
+  shell: |
+    python3 -m pip install {{ item }}
+  with_items:
+    - shyaml
+    - kubernetes
+  become: yes
+
+- name: delete namespace
+  raw: "kubectl delete namespace {{ namespace }} "
+  register: result  
+  ignore_errors: yes
+
+- name: delete StorageClass
+  raw: "kubectl delete StorageClass maya-storage"
+  register: result  
+  ignore_errors: yes
+  
+- name: delete pv
+  raw: "kubectl delete pv maya-server-volume"
+  register: result  
+  ignore_errors: yes
+  
+- name: "Delete PV folder"
+  shell: |
+    rm -rf /var/vols/itom/maya-volume
+  ignore_errors: yes
+  
+- name: "Clean working directory"
+  file:
+    path: "{{ workspace_dir }}/maya"
+    state: absent
+
+- name: "Create working directory to extract zip"
+  file:
+    path: "{{ extracted_dir }}"
+    state: directory
+    
+- name: "Create working directory for realized yamls"
+  file:
+    path: "{{ realized_dir }}"
+    state: directory
+    
+- name: "Download maya server deployment zip"
+  get_url:
+    url: "{{ MAYA_DEPLOY_YAMLS_URL }}"
+    dest: "{{ workspace_dir }}/maya.zip"
+    validate_certs: no
+    force: yes
+  become: no
+  async: 3600 # Maximum allowed time in Seconds
+  poll: 10 # Polling Interval in Seconds  
+    
+- name: "Extract maya.zip to {{ extracted_dir }}"
+  shell: |
+    unzip -d "${DEST}" "${SOURCE}"
+  environment:
+    DEST: "{{ extracted_dir }}"
+    SOURCE: "{{ workspace_dir }}/maya.zip"
+  register: result  
+  
+- debug: var=result.stdout_lines
+
+- shell: ls -1 "{{ extracted_dir }}"
+  register: yamls
+
+- debug:
+    var: yamls.stdout_lines    
+ 
+- name: get server_crt from core namespace ingress 
+  shell: |
+    server_crt=$(kubectl get secret nginx-default-secret -n core -o yaml | grep tls.crt)
+    echo "${server_crt/tls.crt: /}"
+  register: server_crt  
+- debug:
+    var: server_crt.stdout
+    
+- name: get server_key from core namespace ingress 
+  shell: |
+    server_key=$(kubectl get secret nginx-default-secret -n core -o yaml | grep tls.key)
+    echo "${server_key/tls.key: /}"
+  register: server_key  
+- debug:
+    var: server_key.stdout     
+    
+- name: replace environment variables in the yaml files
+  shell: |
+    envsubst < "{{ extracted_dir }}/{{ item }}" > "{{ ( realized_dir + '/'+ item ) | replace('-template','') }}"
+  environment:
+    namespace: "{{ namespace }}"
+    DB_HOSTNAME: "{{ DB_HOSTNAME }}"
+    DB_USERNAME: "{{ DB_USERNAME }}"
+    DB_PASSWORD: "{{ DB_PASSWORD }}"
+    HOST_NAME: "{{ HOST_NAME }}"
+    build_number: "{{ build_number }}"
+    NFS_HOST: "{{ NFS_HOST }}"
+    server_crt: "{{ server_crt.stdout }}"
+    server_key: "{{ server_key.stdout }}"
+  with_items: "{{ yamls.stdout_lines }}"
+  register: result      
+  
+- name: create namespace
+  shell: "kubectl create namespace {{ namespace }} "
+  register: result  
+  
+- name: "Setup NFS folder"
+  shell: |
+    "/opt/cdf/scripts/setupNFS.sh" "/var/vols/itom/maya-volume"
+    exportfs -ra
+    systemctl restart nfs-server
+  register: setupNFS
+    
+- name: "Deploy Maya Services"
+  raw: "kubectl create -f {{ realized_dir }}/{{ item }}"
+  with_items:
+    - itom-maya-pv.yaml
+    - itom-maya-pvc.yaml      
+    - itom-maya-storage.yaml
+    - itom-nginx-ingress-role.yaml
+    - itom-nginx-ingress-rolebinding.yaml
+    - itom-nginx-ingress-serviceaccount.yaml
+    - itom-nginx-ingress-configmap.yaml
+    - itom-nginx-ingress-svc.yaml
+    - itom-maya-service.yaml
+    - itom-nginx-default-secret.yaml
+    - itom-nginx-ingress-deployment.yaml
+    - itom-maya-role.yaml      
+    - itom-maya-rolebinding.yaml
+    - itom-maya-configmap.yaml
+    - itom-maya-ingress.yaml
+    - itom-maya-deployment.yaml
+    - itom-maya-s3mock-deployment.yaml
+    - itom-maya-s3mock-ingress.yaml
+    - itom-maya-s3mock-service.yaml
+         
+- name: "Waiting for Deployments"
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ realized_dir }}/{{ item }}"
+    wait: yes
+    wait_timeout: 600 # 10 Minute Wait Max
+    wait_condition:
+      type: Available
+      status: True
+  with_items:
+    - itom-nginx-ingress-deployment.yaml
+    - itom-maya-deployment.yaml
+    - itom-maya-s3mock-deployment.yaml
+
+#- name: "check the status of the maya server"
+#  uri:
+#    url: "{{ test_url }}"
+#    method: GET
+#    timeout: 30
+#    return_content: yes
+#    status_code: 200
+#    validate_certs: no
+#  register: out
+#
+#- name: Print the msg
+#  debug:
+#    msg: "{{ out.content }}"

@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    ingress.kubernetes.io/use-regex: "true"
+    ingress.kubernetes.io/rewrite-target: /$2
+    ingress.kubernetes.io/backend-protocol: HTTPS
+    ingress.kubernetes.io/proxy-body-size: 4096m
+    ingress.kubernetes.io/secure-backends: "true"
+    kubernetes.io/ingress.class: nginx
+  name: ${pod-name}-ingress
+  namespace: ${namespace}
+spec:
+  rules:
+    - http:
+        paths:
+          - backend:
+              service:
+                name: ${pod-name}-service
+                port:
+                  number: 443
+            path: /recommendation/${usecase-name}(/|$)(.*)
+            pathType: Prefix

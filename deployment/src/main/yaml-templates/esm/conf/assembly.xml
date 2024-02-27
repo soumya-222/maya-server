@@ -1,0 +1,16 @@
+<assembly>
+    <id>yaml-artifact</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>${project.build.directory}/lib</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>**/*.yaml</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>

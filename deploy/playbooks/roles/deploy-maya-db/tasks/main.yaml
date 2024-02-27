@@ -1,0 +1,50 @@
+- name: "Install packages and dependencies"
+  yum:
+    name:
+      - python3
+      - epel-release
+      - python3-setuptools
+      - python3-devel
+      - python3-pip
+      - python3-psycopg2
+      - gcc
+    state: present
+    disable_gpg_check: yes
+    use_backend: yum
+    
+- name: "Upgrade Pip"
+  shell: |
+    python3 -m pip install --upgrade pip
+  become: yes
+
+- name: "Install Python packages"
+  shell: |
+    python3 -m pip install {{ item }}
+  with_items:
+    - shyaml
+    - kubernetes
+  become: yes
+  
+- name: "Kill active sessions"
+  community.postgresql.postgresql_query:
+    db: "postgres"
+    query: "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname like '%{{ item }}%' AND pid <> pg_backend_pid();"
+  become: yes
+  become_user: "{{ DB_USERNAME }}"
+  ignore_errors: yes
+  with_items:
+    - "{{ DB_NAME }}"
+
+- name: "Deleting databases if exist"
+  community.postgresql.postgresql_db: "name={{ item }} state=absent"
+  become: yes
+  become_user: "{{ DB_USERNAME }}"
+  with_items:
+    - "{{ DB_NAME }}"
+  
+- name: "Creating databases"
+  community.postgresql.postgresql_db: "name={{ item }} state=present owner={{ DB_USERNAME }}"
+  become: yes
+  become_user: "{{ DB_USERNAME }}"
+  with_items:
+    - "{{ DB_NAME }}"    

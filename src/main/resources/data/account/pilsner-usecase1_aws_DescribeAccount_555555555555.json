@@ -1,0 +1,11 @@
+{
+  "Account": {
+    "Id": "555555555555",
+    "Arn": "arn:aws:organizations::555555555555:account/o-exampleorgid/555555555555",
+    "Name": "Beta account",
+    "Email": "abc@example.com",
+    "JoinedMethod": "INVITED",
+    "JoinedTimeStamp": 1481756563.134,
+    "Status": "ACTIVE"
+  }
+}

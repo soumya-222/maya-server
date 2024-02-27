@@ -1,0 +1,85 @@
+- name: Uninstall CDF if installed
+  command: /opt/cdf/uninstall.sh -y
+  ignore_errors: true
+
+- name: "Clean pv directory"
+  file:
+    path: "/var/vols/itom"
+    state: absent
+
+- name: "Clean cdf install directory"
+  file:
+    path: "/opt/cdf"
+    state: absent
+
+- name: "Clean work directory"
+  file:
+    path: "/opt/cdf"
+    state: absent
+    
+- name: "Clean etc exports entries"
+  shell: |  
+    rm -rf /etc/exports
+    touch /etc/exports
+    exportfs -ra
+    systemctl restart nfs-server
+
+- name: "Clean working directory"
+  file:
+    path: "{{ workspace_dir }}/cdf/extracted"
+    state: absent
+
+- name: "Create working directory"
+  file:
+    path: "{{ workspace_dir }}/cdf/extracted"
+    state: directory
+
+- name: generate json from template
+  template: src=config.json.template dest={{ workspace_dir }}/config.json
+
+- name: "Download CDF to cdf.zip"
+  get_url:
+    url: "{{ CDF_DOWNLOAD_URL }}"
+    dest: "{{ workspace_dir }}/cdf.zip"
+    validate_certs: no
+    force: yes
+  become: no
+  async: 3600 # Maximum allowed time in Seconds
+  poll: 10 # Polling Interval in Seconds  
+
+- name: "Extract cdf.zip to {{ workspace_dir }}/cdf/extracted"
+  shell: |
+    unzip -d "${DEST}" "${SOURCE}" && f=("${DEST}"/*) && mv "${DEST}"/*/* "${DEST}" && rmdir "${f[@]}"
+  environment:
+    DEST: "{{ workspace_dir }}/cdf/extracted"
+    SOURCE: "{{ workspace_dir }}/cdf.zip"
+
+- name: "Setup NFS folder"
+  shell: |
+    "{{ workspace_dir }}/cdf/extracted/cdf/scripts/setupNFS.sh" "/var/vols/itom/core"
+    "{{ workspace_dir }}/cdf/extracted/cdf/scripts/setupNFS.sh" "/var/vols/itom/itom-logging-vol"
+    "{{ workspace_dir }}/cdf/extracted/cdf/scripts/setupNFS.sh" "/var/vols/itom/core-db"
+    "{{ workspace_dir }}/cdf/extracted/cdf/scripts/setupNFS.sh" "/var/vols/itom/core-db-backup"
+    "{{ workspace_dir }}/cdf/extracted/cdf/scripts/setupNFS.sh" "/var/vols/itom/itom-monitor-vol"
+    exportfs -ra
+    systemctl restart nfs-server
+  register: setupNFS
+  
+- debug: msg="{{ setupNFS }}"
+
+- name: "Installing CDF"
+  shell: |
+    "{{ workspace_dir }}/cdf/extracted/install" -c "{{ workspace_dir }}/config.json" \
+      -P "{{ CDF_ADMIN_PASSWORD }}" \
+      -n primary \
+      --capabilities "Monitoring=true,NfsProvisioner=false" \
+      --feature-gates "MultipleDeployment=true,AppHub=true" \
+      --fail-swap-on false \
+      --skip-warning \
+      --username admin \
+      --nfs-server "{{ master }}" \
+      --nfs-folder /var/vols/itom/core
+  register: installcdf
+
+- debug: msg="{{ installcdf.stdout.split('\n') }}"
+- debug: msg="{{ installcdf.stderr.split('\n') }}"

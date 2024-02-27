@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    ingress.kubernetes.io/backend-protocol: HTTP
+    ingress.kubernetes.io/proxy-body-size: 4096m
+    ingress.kubernetes.io/secure-backends: "false"
+    kubernetes.io/ingress.class: nginx
+  name: maya-server-ingress
+  namespace: ${namespace}
+spec:
+  rules:
+    - http:
+        paths:
+          - backend:
+              service:
+                name: maya-server-service
+                port:
+                  number: 9994
+            path: /maya
+            pathType: Prefix

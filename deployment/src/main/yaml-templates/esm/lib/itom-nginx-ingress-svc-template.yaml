@@ -1,0 +1,17 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: itom-nginx-ingress-svc
+  namespace: ${namespace}
+  labels:
+    itsmaService: itom-ingress
+spec:
+  selector:
+    app: itom-nginx-ingress
+  #Expose the nginx-ingres svc by NodePort, but let k8s choose those ports randomly  
+  type: NodePort
+  ports:
+  - name: "https-port"
+    port: 443
+    targetPort: "https-svc"
+    nodePort: 443

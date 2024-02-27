@@ -1,0 +1,68 @@
+{
+  "uuid": "31d87838-e89f-4007-9507-bcde58abbd7c",
+  "lastMigration": 27,
+  "name": "${usecase-name}",
+  "endpointPrefix": "",
+  "latency": 0,
+  "port": "${server-port}",
+  "hostname": "",
+  "folders": [],
+  "routes": [
+    {
+      "uuid": "0e424429-2891-452a-a66f-eefcfb14cc3d",
+      "type": "http",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "",
+      "responses": [],
+      "enabled": true,
+      "responseMode": null
+    }
+  ],
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "0e424429-2891-452a-a66f-eefcfb14cc3d"
+    }
+  ],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": true,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": true,
+  "headers": [
+    {
+      "key": "Accept",
+      "value": "application/json"
+    },
+    {
+      "key": "X-Amz-Date",
+      "value": "X-Amz-Date"
+    },
+    {
+      "key": "Content-Type",
+      "value": "application/x-amz-json-1.1"
+    }
+  ],
+  "proxyReqHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "proxyResHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "data": []
+}

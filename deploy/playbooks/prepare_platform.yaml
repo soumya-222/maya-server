@@ -1,0 +1,14 @@
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: add master
+      add_host:
+        name: "{{ master }}"
+        groups: master
+        
+- hosts: master
+  gather_facts: no
+  remote_user: root
+  roles:
+    - role: install-cdf-platform

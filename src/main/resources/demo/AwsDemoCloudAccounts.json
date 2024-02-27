@@ -1,0 +1,49 @@
+[
+  {
+    "name": "Sales-AWS-NONPROD",
+    "accountId": "usageAccount1",
+    "accountScope": "ROOT",
+    "phaseId": "Active"
+  },
+  {
+    "name": "cloud-AWS-public-prod",
+    "accountId": "usageAccount2",
+    "accountScope": "MEMBER",
+    "phaseId": "Archived",
+    "rootAccountId": "usageAccount1"
+  },
+  {
+    "name": "cloud-PROD",
+    "accountId": "usageAccount3",
+    "accountScope": "ROOT",
+    "phaseId": "Suspended"
+  },
+  {
+    "name": "Legacy",
+    "accountId": "usageAccount4",
+    "accountScope": "MEMBER",
+    "phaseId": "Suspended",
+    "rootAccountId": "usageAccount3"
+  },
+  {
+    "name": "RnD-NONPROD",
+    "accountId": "wpfo80dosug",
+    "accountScope": "MEMBER",
+    "phaseId": "Active",
+    "rootAccountId": "usageAccount1"
+  },
+  {
+    "name": "public-Services-Sales-PROD",
+    "accountId": "1lv3a6vkc36",
+    "accountScope": "MEMBER",
+    "phaseId": "Active",
+    "rootAccountId": "usageAccount1"
+  },
+  {
+    "name": "Sales-AWS-sales-NONPROD",
+    "accountId": "wiqb9u2ol7f",
+    "accountScope": "MEMBER",
+    "phaseId": "Suspended",
+    "rootAccountId": "usageAccount3"
+  }
+]

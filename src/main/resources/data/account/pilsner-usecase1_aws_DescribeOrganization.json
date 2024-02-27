@@ -1,0 +1,16 @@
+{
+  "Organization": {
+    "MasterAccountArn": "arn:aws:organizations::555555555555:account/o-exampleorgid/555555555555",
+    "MasterAccountEmail": "bill@example.com",
+    "MasterAccountId": "555555555555",
+    "Id": "o-exampleorgid",
+    "FeatureSet": "ALL",
+    "Arn": "arn:aws:organizations::555555555555:organization/o-exampleorgid",
+    "AvailablePolicyTypes": [
+      {
+        "Status": "ENABLED",
+        "Type": "SERVICE_CONTROL_POLICY"
+      }
+    ]
+  }
+}

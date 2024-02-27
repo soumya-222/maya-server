@@ -1,0 +1,44 @@
+{
+  "allowWorkerOnMaster": true,
+  "masterNodes": [],
+  "licenseAgreement": {
+    "eula": true,
+    "callHome": false
+  },
+  "connection": {
+    "externalHostname": "{{ master }}",
+    "port": "443"
+  },
+  "database": {
+    "type": "intpostgres",
+    "param": {
+      "highAvailability": false
+    }
+  },
+  "volumes": [
+    {
+      "type": "NFS",
+      "name": "itom-logging-vol",
+      "host": "{{ master }}",
+      "path": "/var/vols/itom/itom-logging-vol"
+    },
+    {
+      "type": "NFS",
+      "name": "db-single-vol",
+      "host": "{{ master }}",
+      "path": "/var/vols/itom/core-db"
+    },
+    {
+      "type": "NFS",
+      "name": "db-backup-vol",
+      "host": "{{ master }}",
+      "path": "/var/vols/itom/core-db-backup"
+    },
+    {
+      "type": "NFS",
+      "name": "itom-monitor-vol",
+      "host": "{{ master }}",
+      "path": "/var/vols/itom/itom-monitor-vol"
+    }
+  ]
+}

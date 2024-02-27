@@ -1,0 +1,28 @@
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: add master
+      add_host:
+        name: "{{ master }}"
+        groups: master
+    - name: add database
+      add_host:
+        name: "{{ DB_HOSTNAME  }}"
+        groups: database
+ 
+- hosts: database
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  gather_facts: no
+  remote_user: root
+  roles:
+    - role: deploy-maya-db
+    
+- hosts: master
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  gather_facts: no
+  remote_user: root
+  roles:
+    - role: deploy-maya-server

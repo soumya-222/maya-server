@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${pod-name}-deployment
+  namespace: ${namespace}
+  labels:
+    app: maya-server-s3mock
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${pod-name}
+  template:
+    metadata:
+      labels:
+        app: ${pod-name}
+    spec:
+      containers:
+        - name: s3mock
+          image: global-docker-hub-remote.orgartifactory.swinfra.net/adobe/s3mock
+          ports:
+            - containerPort: 9090
+              protocol: TCP
+          volumeMounts:
+            - name: "nfs"
+              mountPath: "/mnt"
+              subPath: "maya/bin/s3mock"
+
+          env:
+            - name: "com.adobe.testing.s3mock.domain.retain-files-on-exit"
+              value: "true"
+            - name: "com.adobe.testing.s3mock.domain.initial-buckets"
+              value: "maya-bucket"
+            - name: "com.adobe.testing.s3mock.domain.root"
+              value: "/mnt"
+            - name: SERVER_SERVLET_CONTEXT-PATH
+              value: /${usecase-name}
+
+      volumes:
+        - name: "nfs"
+          persistentVolumeClaim:
+            claimName: maya-volume

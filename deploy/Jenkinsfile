@@ -1,0 +1,177 @@
+
+def getConfig() {
+    def config = [:]
+    if(!params.HOST_FQDN){
+        error "pls make sure to provide HOST_FQDN in params."
+    }
+    config.master = params.HOST_FQDN
+    if(!params.ROOT_PASSWORD){
+        error "pls make sure to provide ROOT_PASSWORD in params."
+    }
+    if(!params.INSTALL_CDF_AND_POSTGRES){
+	    if(!params.DB_HOSTNAME){
+		error "pls make sure to provide DB_HOSTNAME in params."
+	    }
+	    if(!params.DB_USERNAME){
+		error "pls make sure to provide DB_USERNAME in params."
+	    }
+	    if(!params.DB_PASSWORD){
+		error "pls make sure to provide DB_PASSWORD in params."
+	    }
+    }
+    config.ROOT_PASSWORD = params.ROOT_PASSWORD
+    config.CDF_ADMIN_PASSWORD = params.ADMIN_PASSWORD ? params.ADMIN_PASSWORD : "Cloud123??"
+    config.artifactory = params.ARTIFACTORY ? params.ARTIFACTORY : smaxDeployUtils.selectArtifactory(config.master)            
+    RELEASE_VERSION = "${params.RELEASE_VERSION}"
+    CDF_VERSION = sh(returnStdout: true, script: """  curl -q https://${config.artifactory}.swinfra.net/artifactory/itom-buildoutput/CDFadopt/${RELEASE_VERSION}/latestCDF.txt  | awk -F 'OMT_Embedded_K8s_' '{print \$2}' | awk -F '.zip' '{print \$1}' """).trim()
+    config.CDF_DOWNLOAD_URL = "https://${config.artifactory}.swinfra.net/artifactory/itom-buildoutput/cdf-daily-build/${RELEASE_VERSION}/OMT_Embedded_K8s_${CDF_VERSION}.zip"
+    config.workspace_dir = "/root/deploy_maya_server"
+    config.DB_HOSTNAME = params.INSTALL_CDF_AND_POSTGRES ? config.master : params.DB_HOSTNAME.trim() 
+    config.DB_USERNAME = params.INSTALL_CDF_AND_POSTGRES ? "postgres" : params.DB_USERNAME.trim() 
+    config.DB_PASSWORD = params.INSTALL_CDF_AND_POSTGRES ? "postgres_pass@FIPS" : params.DB_PASSWORD.trim() 
+    config.POSTGRES_VERSION = "14"
+    config.DB_NAME = "maya"
+    config.namespace = "maya-server"
+    config.NFS_HOST = config.master
+    config.HOST_NAME = config.master
+    config.build_number = params.MAYA_SERVER_BUILD.trim() ? params.MAYA_SERVER_BUILD : "latest"
+    return config
+}
+
+
+timestamps {
+    properties([
+        parameters([
+                string(name: 'HOST_FQDN', defaultValue: "", description: 'FQDN of the host VM'),
+                stringParam(name: 'ROOT_PASSWORD', defaultValue: "", description: 'Root Password of above host VM'),              
+                booleanParam(name: 'INSTALL_CDF_AND_POSTGRES', defaultValue: true, description: 'Install CDF Platform. Unselect this option CDF if already running in above VM'),
+                string(name: 'RELEASE_VERSION', defaultValue: "23.4", description: 'CDF Release version'),   
+                string(name: 'ADMIN_PASSWORD', defaultValue: "Cloud123??", description: 'CDF Admin Password'), 
+                string(name: 'DB_HOSTNAME', defaultValue: "", description: 'Postgres Hostname'), 
+                string(name: 'DB_USERNAME', defaultValue: "", description: 'Postgres Admin User'), 
+                string(name: 'DB_PASSWORD', defaultValue: "", description: 'Postgres Admin User Password'), 
+                string(name: 'ARTIFACTORY', defaultValue: "svsartifactory", description: 'Optional: preferred artifactory where CDF and MAYA server artifacts can be downloaded. Default svs'),
+                string(name: 'MAYA_SERVER_BUILD', defaultValue: "", description: 'Optional: Maya Server build to deploy. Default latest'),
+		string(name: 'MAYA_SERVER_DEPLOY_BRANCH', defaultValue: "v1.0.x", description: 'Maya server deployment code (ansibel) branch')
+        ])
+     ])
+
+podTemplate(
+        containers: [
+                containerTemplate(name: 'ansible', image: 'itom-docker-hcm.orgartifactory.swinfra.net:443/devops/itom-hcmx-cicd-ansible:1.0.0-latest', resourceRequestCpu: '0.5', resourceLimitCpu: '4', resourceRequestMemory: '3Gi', resourceLimitMemory: '3Gi', privileged: false, ttyEnabled: true, command: 'cat', alwaysPullImage: true),
+        ]
+) {
+   node(POD_LABEL) {
+        checkout scm
+	gt.checkout(org: 'DND', repo: 'maya-server', branch: "${params.MAYA_SERVER_DEPLOY_BRANCH}")
+        def config = getConfig()
+        
+        def cause = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')        
+	
+	 stage('Initializing') {
+            currentBuild.displayName = currentBuild.displayName + " " + params.HOST_FQDN
+	    currentBuild.description = "<div style=\"border: 1px solid #cccccc;padding: 10px;background-color: #f1f2f3;overflow: auto\">" +
+                    "<div style=\"display:flex;flex-direction:row\">" +
+                    "  <div style=\"flex-basis: 33%\">" +
+                    "    <h4>MAYA SERVER INFORMATION</h4>" +
+                    "    <ul style=\"padding-left: 20px\">" +
+                    "      <li>SSH: ssh root@${config.master}</li>" +
+		    "	   <li>SSH Password: ${config.ROOT_PASSWORD}</li>" +	
+                    "    </ul>" +
+                    "  </div>"
+                    "</div>" +
+                    "</div>"
+	 }
+        stage("Install pre-req") {
+            if (params.INSTALL_CDF_AND_POSTGRES) {  
+                    callService serviceName: 'S14_config_vm', pollInterval: 60, parameters: """
+                        vm_list=${config.master}
+                        SSH_PASSWORD=${config.ROOT_PASSWORD}                     
+                    """
+            } else {
+                echo "skip config vm installation"
+            }
+        }
+        
+        stage('Install CDF Platform') {
+            if (params.INSTALL_CDF_AND_POSTGRES) {  
+                container('ansible') {
+                    dir('deploy/playbooks') {
+                        writeYaml file: 'vars.yaml', data: config
+                        ansiblePlaybook(
+                                playbook: 'prepare_platform.yaml',
+                                disableHostKeyChecking: true,
+                                extras: "-e @vars.yaml -e ansible_password=${config.ROOT_PASSWORD}"
+                        )
+                    }
+                }
+            } else {
+                echo "skip CDF installation"
+            }
+        }  
+                
+        stage("Install PG") {
+            if (params.INSTALL_CDF_AND_POSTGRES) {  
+                    callService serviceName: 'S15_installpg_ssl', pollInterval: 60, parameters: """
+                          HOSN_NAME_FQDN=${config.master}
+                          SSH_PASSWORD=${config.ROOT_PASSWORD}
+                          PGVERSION=${config.POSTGRES_VERSION}   
+                    """
+            } else {
+                echo "skip postgres installation"
+            }
+        }
+		
+        stage('Deploy Maya Server') {
+            container('ansible') {
+                def latest_mayaserver_version = sh(returnStdout: true, script: """ curl -s "https://orgartifactory.swinfra.net/artifactory/list/itom-mvn-hcm-snapshot/com/microfocus/dnd/itom-maya-server-yaml-artifact/esm/1.0-SNAPSHOT/maven-metadata.xml" | xmllint --xpath 'string(/metadata/versioning/snapshotVersions/snapshotVersion[last()]/value)' - """).trim()
+                config.MAYA_DEPLOY_YAMLS_URL = "https://orgartifactory.swinfra.net/artifactory/list/itom-mvn-hcm-snapshot/com/microfocus/dnd/itom-maya-server-yaml-artifact/esm/1.0-SNAPSHOT/esm-" + latest_mayaserver_version + ".zip"
+                echo "MAYA_DEPLOY_YAMLS_URL :: ${config.MAYA_DEPLOY_YAMLS_URL}"
+                dir('deploy/playbooks') {
+                    writeYaml file: 'vars1.yaml', data: config
+                    ansiblePlaybook(
+                            playbook: 'deploy_maya_server.yaml',
+                            disableHostKeyChecking: true,
+                            extras: "-e @vars1.yaml -e ansible_password=${config.ROOT_PASSWORD}"
+                    )
+                }
+            }
+        }  
+        
+	stage('Final') {
+            currentBuild.description = "<div style=\"border: 1px solid #cccccc;padding: 10px;background-color: #f1f2f3;overflow: auto\">" +
+                    "<div style=\"display:flex;flex-direction:row\">" +
+                    "  <div style=\"flex-basis: 33%\">" +
+                    "    <h4>MAYA SERVER INFORMATION</h4>" +
+                    "    <ul style=\"padding-left: 20px\">" +
+                    "      <li>SSH: ssh root@${config.master}</li>" +
+		    "	   <li>SSH Password: ${config.ROOT_PASSWORD}</li>" +	
+                    "    </ul>" +
+                    "  </div>" +
+                    "  <div style=\"flex-basis: 33%\">" +
+                    "    <h4>MAYA SERVER URI</h4>" +
+                    "    <ul style=\"padding-left: 20px\">" +
+                    "      <li>Usecase URL: <a href=\"https://${config.master}/maya/v1/usecase\" target=\"_blank\">https://${config.master}/maya/v1/usecase</a></li>" +
+                    "      <li>MAYA Swagger URL: <a href=\"https://${config.master}/maya/swagger-ui/index.html\" target=\"_blank\">https://${config.master}/maya/swagger-ui/index.html</a></li>" +
+                    "    </ul>" +
+                    "  </div>" +
+                    "  <div style=\"flex-basis: 33%\">" +
+                    "    <h4>DATABASE INFORMATION</h4>" +
+                    "    <ul style=\"padding-left: 20px\">" +
+                    "      <li>Host: <b>${config.DB_HOSTNAME}</b></li>" +
+                    "      <li>Port: <b>5432</b></li>" +
+		    "      <li>DB Name: <b>${config.DB_NAME}</b></li>" +
+                    "      <li>Login: <b>${config.DB_USERNAME}</b></li>" +
+                    "      <li>Password: <b>${config.DB_PASSWORD}</b></li>" +
+		    "      <li>DB Version: <b>${config.POSTGRES_VERSION}</b></li>" +
+                    "    </ul>" +
+                    "  </div>" +
+                    "</div>" +
+                    "</div>"
+
+
+            currentBuild.result = 'SUCCESS'
+        }   
+    }
+  }
+}

@@ -1,0 +1,176 @@
+{
+	"Accounts": [
+		{
+			"Arn": "arn:aws:organizations::123456789012:account/o-5f4r257v10/123456789012",
+			"Email": "pilsner@example.com",
+			"Id": "1234567890222",
+			"JoinedMethod": "CREATED",
+			"JoinedTimestamp": "2023-03-20 22:51:10.850533+05:30",
+			"Name": "master",
+			"Status": "ACTIVE"
+		},
+		{
+			"Arn": "arn:aws:organizations::123456789012:account/o-5f4r257v10/189783965128",
+			"Email": "example0@example.com",
+			"Id": "189783965128",
+			"JoinedMethod": "CREATED",
+			"JoinedTimestamp": "2023-03-20 22:51:10.852532+05:30",
+			"Name": "test-account-name0",
+			"Status": "ACTIVE"
+		},
+		{
+			"Arn": "arn:aws:organizations::123456789012:account/o-5f4r257v10/261919741424",
+			"Email": "example1@example.com",
+			"Id": "261919741424",
+			"JoinedMethod": "CREATED",
+			"JoinedTimestamp": "2023-03-20 22:51:10.855535+05:30",
+			"Name": "test-account-name1",
+			"Status": "ACTIVE"
+		},
+		{
+			"Arn": "arn:aws:organizations::123456789012:account/o-5f4r257v10/648370951327",
+			"Email": "example2@example.com",
+			"Id": "648370951327",
+			"JoinedMethod": "CREATED",
+			"JoinedTimestamp": "2023-03-20 22:51:10.856533+05:30",
+			"Name": "test-account-name2",
+			"Status": "SUSPENDED"
+		},
+		{
+			"Arn": "arn:aws:organizations::123456789012:account/o-5f4r257v10/783222780640",
+			"Email": "example3@example.com",
+			"Id": "783222780640",
+			"JoinedMethod": "CREATED",
+			"JoinedTimestamp": "2023-03-20 22:51:10.858532+05:30",
+			"Name": "test-account-name3",
+			"Status": "ACTIVE"
+		},
+		{
+			"Arn": "arn:aws:organizations::123456789012:account/o-5f4r257v10/998293532228",
+			"Email": "example4@example.com",
+			"Id": "998293532228",
+			"JoinedMethod": "CREATED",
+			"JoinedTimestamp": "2023-03-20 22:51:10.859533+05:30",
+			"Name": "test-account-name4",
+			"Status": "ACTIVE"
+		},
+		{
+			"Arn": "arn:aws:organizations::123456789012:account/o-5f4r257v10/295921436294",
+			"Email": "example5@example.com",
+			"Id": "295921436294",
+			"JoinedMethod": "CREATED",
+			"JoinedTimestamp": "2023-03-20 22:51:10.861533+05:30",
+			"Name": "test-account-name5",
+			"Status": "ACTIVE"
+		},
+		{
+			"Arn": "arn:aws:organizations::123456789012:account/o-5f4r257v10/436451491626",
+			"Email": "example6@example.com",
+			"Id": "436451491626",
+			"JoinedMethod": "CREATED",
+			"JoinedTimestamp": "2023-03-20 22:51:10.862532+05:30",
+			"Name": "test-account-name6",
+			"Status": "PENDING_CLOSURE"
+		},
+		{
+			"Arn": "arn:aws:organizations::123456789012:account/o-5f4r257v10/284183051231",
+			"Email": "example7@example.com",
+			"Id": "284183051231",
+			"JoinedMethod": "CREATED",
+			"JoinedTimestamp": "2023-03-20 22:51:10.864532+05:30",
+			"Name": "test-account-name7",
+			"Status": "ACTIVE"
+		},
+		{
+			"Arn": "arn:aws:organizations::123456789012:account/o-5f4r257v10/246155780689",
+			"Email": "example8@example.com",
+			"Id": "246155780689",
+			"JoinedMethod": "CREATED",
+			"JoinedTimestamp": "2023-03-20 22:51:10.865533+05:30",
+			"Name": "test-account-name8",
+			"Status": "ACTIVE"
+		},
+		{
+			"Arn": "arn:aws:organizations::123456789012:account/o-5f4r257v10/755575354823",
+			"Email": "example9@example.com",
+			"Id": "755575354823",
+			"JoinedMethod": "CREATED",
+			"JoinedTimestamp": "2023-03-20 22:51:10.866533+05:30",
+			"Name": "test-account-name9",
+			"Status": "ACTIVE"
+		},
+		{
+			"Arn": "arn:aws:organizations::123456789012:account/o-5f4r257v10/898005312884",
+			"Email": "example10@example.com",
+			"Id": "898005312884",
+			"JoinedMethod": "CREATED",
+			"JoinedTimestamp": "2023-03-20 22:51:10.868522+05:30",
+			"Name": "test-account-name10",
+			"Status": "ACTIVE"
+		},
+		{
+			"Arn": "arn:aws:organizations::123456789012:account/o-5f4r257v10/031915078830",
+			"Email": "example11@example.com",
+			"Id": "031915078830",
+			"JoinedMethod": "CREATED",
+			"JoinedTimestamp": "2023-03-20 22:51:10.870520+05:30",
+			"Name": "test-account-name11",
+			"Status": "ACTIVE"
+		},
+		{
+			"Arn": "arn:aws:organizations::123456789012:account/o-5f4r257v10/788211810765",
+			"Email": "example12@example.com",
+			"Id": "788211810765",
+			"JoinedMethod": "CREATED",
+			"JoinedTimestamp": "2023-03-20 22:51:10.871521+05:30",
+			"Name": "test-account-name12",
+			"Status": "ACTIVE"
+		},
+		{
+			"Arn": "arn:aws:organizations::123456789012:account/o-5f4r257v10/576368630429",
+			"Email": "example13@example.com",
+			"Id": "576368630429",
+			"JoinedMethod": "CREATED",
+			"JoinedTimestamp": "2023-03-20 22:51:10.873520+05:30",
+			"Name": "test-account-name13",
+			"Status": "ACTIVE"
+		},
+		{
+			"Arn": "arn:aws:organizations::123456789012:account/o-5f4r257v10/013953999105",
+			"Email": "example14@example.com",
+			"Id": "013953999105",
+			"JoinedMethod": "CREATED",
+			"JoinedTimestamp": "2023-03-20 22:51:10.874533+05:30",
+			"Name": "test-account-name14",
+			"Status": "ACTIVE"
+		},
+		{
+			"Arn": "arn:aws:organizations::123456789012:account/o-5f4r257v10/356586650904",
+			"Email": "example15@example.com",
+			"Id": "356586650904",
+			"JoinedMethod": "CREATED",
+			"JoinedTimestamp": "2023-03-20 22:51:10.876533+05:30",
+			"Name": "test-account-name15",
+			"Status": "ACTIVE"
+		},
+		{
+			"Arn": "arn:aws:organizations::123456789012:account/o-5f4r257v10/833039826074",
+			"Email": "example16@example.com",
+			"Id": "833039826074",
+			"JoinedMethod": "CREATED",
+			"JoinedTimestamp": "2023-03-20 22:51:10.878533+05:30",
+			"Name": "test-account-name16",
+			"Status": "ACTIVE"
+		},
+		{
+			"Arn": "arn:aws:organizations::123456789012:account/o-5f4r257v10/070785109001",
+			"Email": "example17@example.com",
+			"Id": "070785109001",
+			"JoinedMethod": "CREATED",
+			"JoinedTimestamp": "2023-03-20 22:51:10.879520+05:30",
+			"Name": "test-account-name17",
+			"Status": "ACTIVE"
+		}
+	],
+	"NextToken": null
+}

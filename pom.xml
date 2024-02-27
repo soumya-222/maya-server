@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.13</version>
+    </parent>
+    <groupId>com.opentext</groupId>
+    <artifactId>maya-server</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>maya-server</name>
+    <description>maya-server</description>
+    <properties>
+        <!-- Itom  Repository -->
+        <itom-repository-host>svsartifactory.swinfra.net</itom-repository-host>
+        <itom-repository-port>443</itom-repository-port>
+        <itom-repository>${itom-repository-host}:${itom-repository-port}</itom-repository>
+        <itom-repository-url>https://${itom-repository}</itom-repository-url>
+
+        <java.version>17</java.version>
+        <build.number>0</build.number>
+        <boost.version>4.0.16</boost.version>
+        <postgresql.version>42.6.0</postgresql.version>
+        <maven.resources.plugin.version>3.0.2</maven.resources.plugin.version>
+        <spotify.docker.maven.version>1.2.2</spotify.docker.maven.version>
+        <itom-repository-mvn-url></itom-repository-mvn-url>
+        <docker.registry></docker.registry>
+        <hcm-registry-server-id>docker.registry</hcm-registry-server-id>
+        <hcm-registry>itom-docker-hcm.orgartifactory.swinfra.net:443</hcm-registry>
+        <hcm-registry-with-org>${hcm-registry}/hcm</hcm-registry-with-org>
+
+        <bundled.dir>${project.build.directory}/docker</bundled.dir>
+        <docker.base.image>itom-docker.svsartifactory.swinfra.net:443/boost/boost:4.0.11</docker.base.image>
+        <docker.registry.server.id>docker.registry</docker.registry.server.id>
+
+        <docker.image.backend.name>${project.name}</docker.image.backend.name>
+        <docker.image.backend.tag>${project.version}.${build.number}</docker.image.backend.tag>
+        <docker.image.backend.nametag>${docker.image.backend.name}:${docker.image.backend.tag}
+        </docker.image.backend.nametag>
+        <docker.image.backend.full.nametag>${hcm-registry-with-org}/${docker.image.backend.nametag}
+        </docker.image.backend.full.nametag>
+
+        <docker.image.tag.latest>latest</docker.image.tag.latest>
+        <docker.image.nametag.latest>${docker.image.backend.name}:${docker.image.tag.latest}
+        </docker.image.nametag.latest>
+        <docker.image.full.nametag.latest>${hcm-registry-with-org}/${docker.image.nametag.latest}
+        </docker.image.full.nametag.latest>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>1.12.472</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>32.1.1-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.7.1</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.kubernetes</groupId>
+            <artifactId>client-java</artifactId>
+            <version>18.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.7.0</version>
+        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.fasterxml.jackson.core</groupId>-->
+<!--            <artifactId>jackson-databind</artifactId>-->
+<!--            <version>2.15.2</version>-->
+<!--        </dependency>-->
+
+       <!-- <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+            <version>2.15.2</version>
+        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>com.fasterxml.jackson.datatype</groupId>-->
+<!--            <artifactId>jackson-datatype-jsr310</artifactId>-->
+<!--            <version>2.15.2</version>-->
+<!--        </dependency>-->
+
+        <!-- https://mvnrepository.com/artifact/com.github.mifmif/generex -->
+        <dependency>
+            <groupId>com.github.mifmif</groupId>
+            <artifactId>generex</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-storage-blob</artifactId>
+            <version>12.25.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
+            <version>1.11.1</version>
+        </dependency>
+
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.1.2</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.junit.jupiter</groupId>
+                        <artifactId>junit-jupiter-engine</artifactId>
+                        <version>5.9.1</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven.resources.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>package-project-bits</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${bundled.dir}</outputDirectory>
+                            <encoding>UTF-8</encoding>
+                            <resources>
+                                <resource>
+                                    <filtering>true</filtering>
+                                    <directory>${project.basedir}/src/main/docker</directory>
+                                </resource>
+                                <resource>
+                                    <filtering>false</filtering>
+                                    <directory>${project.build.directory}</directory>
+                                    <includes>
+                                        <include>${project.build.finalName}.jar</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- build docker image from artifacts in bundled dir -->
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${spotify.docker.maven.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>javax.activation</groupId>
+                        <artifactId>activation</artifactId>
+                        <version>1.1.1</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <imageName>${docker.image.backend.name}</imageName>
+                    <imageTags>
+                        <imageTag>${docker.image.backend.tag}</imageTag>
+                    </imageTags>
+                    <dockerDirectory>${bundled.dir}</dockerDirectory>
+                    <serverId>${hcm-registry-server-id}</serverId>
+                    <registryUrl>${hcm-registry-with-org}</registryUrl>
+                    <pullOnBuild>true</pullOnBuild>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>build-image</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>tag-image</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>tag</goal>
+                        </goals>
+                        <configuration>
+                            <image>${docker.image.backend.nametag}</image>
+                            <newName>${docker.image.backend.full.nametag}</newName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>tag-image-latest</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>tag</goal>
+                        </goals>
+                        <configuration>
+                            <image>${docker.image.nametag.latest}</image>
+                            <newName>${docker.image.full.nametag.latest}</newName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>push-image</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>push</goal>
+                        </goals>
+                        <configuration>
+                            <imageName>${docker.image.backend.full.nametag}</imageName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>push-image-latest</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>push</goal>
+                        </goals>
+                        <configuration>
+                            <imageName>${docker.image.full.nametag.latest}</imageName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>itom-mvn-snapshot</id>
+            <name>ITOM Artifactory Snapshot</name>
+            <url>https://svsartifactory.swinfra.net/artifactory/itom-mvn-snapshot/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>itom-mvn-release</id>
+            <name>ITOM Artifactory Release</name>
+            <url>https://svsartifactory.swinfra.net/artifactory/itom-mvn-release/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>production</id>
+            <build>
+                <resources>
+                    <resource>
+                        <filtering>false</filtering>
+                        <directory>${project.basedir}/src/main/resources</directory>
+                        <!--<excludes>
+                            <exclude>application.yaml</exclude>
+                            <exclude>config.properties</exclude>
+                        </excludes>-->
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+    </profiles>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>itom-mvn-hcm-snapshot</id>
+            <name>itom-mvn-hcm-snapshot</name>
+            <url>https://orgartifactory.swinfra.net:443/artifactory/itom-mvn-hcm-snapshot/</url>
+        </snapshotRepository>
+        <repository>
+            <id>itom-mvn-hcm-release</id>
+            <name>itom-mvn-hcm-release</name>
+            <url>https://orgartifactory.swinfra.net:443/artifactory/itom-mvn-hcm-release/</url>
+        </repository>
+    </distributionManagement>
+</project>

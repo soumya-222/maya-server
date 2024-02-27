@@ -1,0 +1,75 @@
+{
+	"Metadata": {
+		"AdditionalMetadata": "{}",
+		"GenerationTimestamp": "2023-08-04T13:39:51Z",
+		"RecommendationId": "88f5a805-af58-475f-ad12-0a3c85207c7b"
+	},
+	"SavingsPlansPurchaseRecommendation": {
+		"AccountScope": "Linked",
+		"LookbackPeriodInDays": "SEVEN_DAYS",
+		"PaymentOption": "ALL_UPFRONT",
+		"SavingsPlansPurchaseRecommendationDetails": [
+			{
+				"AccountId": "1lv3a6vkc36",
+				"CurrencyCode": "USD",
+				"CurrentAverageHourlyOnDemandSpend": "13.7042027309",
+				"CurrentMaximumHourlyOnDemandSpend": "20.4340000000",
+				"CurrentMinimumHourlyOnDemandSpend": "9.9060000000",
+				"EstimatedAverageUtilization": "99.2310026500",
+				"EstimatedMonthlySavingsAmount": "2151.5832019890",
+				"EstimatedOnDemandCost": "421.6511849240",
+				"EstimatedOnDemandCostWithCurrentCommitment": "2302.3060587980",
+				"EstimatedROI": "35.7387443800",
+				"EstimatedSPCost": "1385.4960000000",
+				"EstimatedSavingsAmount": "495.1588738740",
+				"EstimatedSavingsPercentage": "21.5070829500",
+				"HourlyCommitmentToPurchase": "8.247",
+				"RecommendationDetailId": "02295636-4e17-4cb0-ae22-a83c2e839b7b",
+				"SavingsPlansDetails": {
+					"InstanceFamily": "",
+					"OfferingId": "6153a7cc-ccdf-43f3-989b-cf54b234f746",
+					"Region": ""
+				},
+				"UpfrontCost": "72243.7200000000"
+			},
+			{
+				"AccountId": "wpfo80dosug",
+				"CurrencyCode": "USD",
+				"CurrentAverageHourlyOnDemandSpend": "2.8113007399",
+				"CurrentMaximumHourlyOnDemandSpend": "8.8074000000",
+				"CurrentMinimumHourlyOnDemandSpend": "1.0720000000",
+				"EstimatedAverageUtilization": "100.0000000000",
+				"EstimatedMonthlySavingsAmount": "256.1080178030",
+				"EstimatedOnDemandCost": "285.6785969181",
+				"EstimatedOnDemandCostWithCurrentCommitment": "472.2985242989",
+				"EstimatedROI": "46.1622238300",
+				"EstimatedSPCost": "127.6800000000",
+				"EstimatedSavingsAmount": "58.9399273808",
+				"EstimatedSavingsPercentage": "12.4793799600",
+				"HourlyCommitmentToPurchase": "0.760",
+				"RecommendationDetailId": "2a2d775c-95eb-4801-bdf0-c5bdb3d4c105",
+				"SavingsPlansDetails": {
+					"InstanceFamily": "",
+					"OfferingId": "6153a7cc-ccdf-43f3-989b-cf54b234f746",
+					"Region": ""
+				},
+				"UpfrontCost": "6657.6000000000"
+			}
+		],
+		"SavingsPlansPurchaseRecommendationSummary": {
+			"CurrencyCode": "USD",
+			"CurrentOnDemandSpend": "2774.6045830969",
+			"DailyCommitmentToPurchase": "216.1680000000",
+			"EstimatedMonthlySavingsAmount": "2407.6912197920",
+			"EstimatedOnDemandCostWithCurrentCommitment": "2774.6045830969",
+			"EstimatedROI": "36.6182652400",
+			"EstimatedSavingsAmount": "554.0988012548",
+			"EstimatedSavingsPercentage": "19.9703700000",
+			"EstimatedTotalCost": "2220.5057818421",
+			"HourlyCommitmentToPurchase": "9.007",
+			"TotalRecommendationCount": "2"
+		},
+		"SavingsPlansType": "SAGEMAKER_SP",
+		"TermInYears": "ONE_YEAR"
+	}
+}

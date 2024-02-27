@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ${namespace}-volume
+spec:
+  capacity:
+    storage: 300Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: maya-storage
+  nfs:
+    server: ${NFS_HOST}
+    path: /var/vols/itom/maya-volume

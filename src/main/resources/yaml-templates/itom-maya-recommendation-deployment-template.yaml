@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${pod-name}
+  namespace: ${namespace}
+  labels:
+    app: maya-server-recommendation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${pod-name}
+  template:
+    metadata:
+      labels:
+        app: ${pod-name}
+    spec:
+      containers:
+        - name: mockoon
+          image: global-docker-hub-remote.orgartifactory.swinfra.net/mockoon/cli:3.1.0
+          command: [ "mockoon-cli", "start", "--daemon-off", "--log-transaction", "--data", "/mnt/recommendation-config/${usecase-name}/recommendation-config_${usecase-name}.json","--container" ]
+          ports:
+            - containerPort: 3001
+              protocol: TCP
+          volumeMounts:
+            - name: "nfs"
+              mountPath: "/mnt/recommendation-config"
+              subPath: "maya/config/recommendation"
+            - name: "nfs"
+              mountPath: "/mnt/recommendation-data"
+              subPath: "maya/data/recommendation"
+
+      volumes:
+        - name: "nfs"
+          persistentVolumeClaim:
+            claimName: "maya-volume"

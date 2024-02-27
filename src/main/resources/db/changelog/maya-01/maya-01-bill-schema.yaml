@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: maya01-4
+      author: MAYA
+      changes:
+        - createTable:
+            tableName: cloud_cost_data
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: use_case_id
+                  type: varchar(255)
+                  constraints:
+                    foreignKeyName: fk_maya_use_case
+                    references: maya_use_case(id)
+              - column:
+                  name: root_account_cost
+                  type: text
+              - column:
+                  name: member_account_cost
+                  type: text
+
+

@@ -1,0 +1,64 @@
+databaseChangeLog:
+  #- property:
+  #    name: example
+  #    value: example
+  #    dbms: h2,oracle,mssql,postgresql
+  - property:
+      name: timestamp
+      value: timestamp
+      dbms: h2,postgresql,oracle
+  - property:
+      name: timestamp
+      value: datetime
+      dbms: mssql
+
+  - property:
+      name: date
+      value: date
+      dbms: h2,postgresql,mssql,oracle
+
+  - property:
+      name: lob
+      value: bytea
+      dbms: h2,postgresql
+  - property:
+      name: lob
+      value: blob
+      dbms: oracle
+  - property:
+      name: lob
+      value: image
+      dbms: mssql
+
+  - property:
+      name: integer
+      value: int
+      dbms: h2,postgresql,mssql
+  - property:
+      name: integer
+      value: number(10)
+      dbms: oracle
+
+  - property:
+      name: boolean
+      value: boolean
+      dbms: h2,postgresql
+  - property:
+      name: boolean
+      value: bit
+      dbms: mssql
+  - property:
+      name: boolean
+      value: char(1)
+      dbms: oracle
+  - property:
+      name: bigint
+      value: bigint
+      dbms: postgresql
+  - property:
+      name: text
+      value: text
+      dbms: postgresql
+
+  - include:
+      file: db/changelog/maya-01/maya-01-changelog.yaml

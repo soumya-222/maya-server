@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: maya01-5
+      author: MAYA
+      changes:
+        - addColumn:
+            tableName: maya_use_case
+            columns:
+              - column:
+                  name: is_demo_mode_enabled
+                  type: boolean
+              - column:
+                  name: demo_root_account_id
+                  type: varchar(36)

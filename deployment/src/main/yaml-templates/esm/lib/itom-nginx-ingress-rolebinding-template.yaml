@@ -1,0 +1,15 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: microfocus:sma:itom-nginx-ingress
+  namespace: ${namespace}
+  labels:
+    itsmaService: itom-ingress
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: microfocus:sma:itom-nginx-ingress
+subjects:
+  - kind: ServiceAccount
+    name: itom-nginx-ingress
+    namespace: ${namespace}

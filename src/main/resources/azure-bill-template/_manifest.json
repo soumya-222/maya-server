@@ -1,0 +1,15 @@
+{
+  "manifestVersion": "2021-01-01",
+  "dataFormat": "csv",
+  "blobCount": 8,
+  "byteCount": 756325659,
+  "dataRowCount": 810466,
+  "blobs": [
+    {
+      "blobName": "actual_bill/hemant_mf_us_inc_87601453/20231101-20231130/202311291132/571d1005-ca07-4557-8a6c-9878d10aaba2/azure-bill-00001.csv",
+      "byteCount": 87455291,
+      "dataRowCount": 97402,
+      "headerRowCount": 1
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: maya-server-deployment
+  namespace: ${namespace}
+  labels:
+    app: maya-server-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: maya-server-deployment
+  template:
+    metadata:
+      labels:
+        app: maya-server-deployment
+    spec:
+      containers:
+        - name: maya
+          image: itom-docker-hcm.orgartifactory.swinfra.net:443/hpeswitomsandbox/maya-server:${build_number}
+          ports:
+            - containerPort: 9994
+              protocol: TCP
+          volumeMounts:
+            - name: "nfs"
+              mountPath: "/mnt/account-config"
+              subPath: "maya/config/mockoon"
+            - name: "nfs"
+              mountPath: "/mnt/account-data"
+              subPath: "maya/data/account"
+            - name: "nfs"
+              mountPath: "/mnt/recommendation-config"
+              subPath: "maya/config/recommendation"
+            - name: "nfs"
+              mountPath: "/mnt/recommendation-data"
+              subPath: "maya/data/recommendation"
+            - name: "nfs"
+              mountPath: "/mnt/aws-bills"
+              subPath: "maya/data/billing/s3mock"
+            - name: "nfs"
+              mountPath: "/mnt/azure-bills"
+              subPath: "maya/data/billing/azurite"
+            - name: "nfs"
+              mountPath: "/mnt/byod"
+              subPath: "maya/data/byod"
+            - name: "nfs"
+              mountPath: "/tmp/maya/logs"
+              subPath: "maya/logs"
+          envFrom:
+            - configMapRef:
+                name: maya-server-cm
+          env:
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: maya-server-cm
+                  key: SPRING_DATASOURCE_URL
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: maya-server-cm
+                  key: SPRING_DATASOURCE_USERNAME
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: maya-server-cm
+                  key: SPRING_DATASOURCE_PASSWORD
+            - name: MAYA-SERVER_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: maya-server-cm
+                  key: HOST_NAME
+            - name: MAYA-SERVER_BYODDATAPATH
+              value: /mnt/byod
+            - name: MAYA-SERVER_S3MOCK_NFS
+              value: /mnt/aws-bills
+            - name: MAYA-SERVER_MOCKOON_NFSDATAPATH
+              value: /mnt/account-data
+            - name: MAYA-SERVER_MOCKOON_NFSCONFIGPATH
+              value: /mnt/account-config
+            - name: MAYA-SERVER_RECOMMENDATION_NFSDATAPATH
+              value: /mnt/recommendation-data
+            - name: MAYA-SERVER_RECOMMENDATION_NFSCONFIGPATH
+              value: /mnt/recommendation-config
+            - name: LOGGING_FILE_NAME
+              value: /tmp/maya/logs/mayaServerApplication.log
+            - name: LOGGING_LEVEL_COM.OPENTEXT.MAYASERVER
+              value: debug
+      volumes:
+        - name: "vault-token"
+          emptyDir: {}
+        - name: "nfs"
+          persistentVolumeClaim:
+            claimName: maya-volume
